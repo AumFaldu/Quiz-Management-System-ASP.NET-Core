@@ -1,0 +1,122 @@
+﻿@model QuestionModel
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">@TempData["PageTitle"]</h5>
+
+        <form class="row g-3" asp-controller="Question" asp-action="QuestionSave" method="post">
+            <input type="hidden" asp-for="@Model.QuestionID"/>
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="floatingName" placeholder="Enter Question Text" asp-for="QuestionText" />
+                        <label for="floatingName" asp-for="QuestionText"><span class="text-danger">*</span> Question Text</label>
+                        <span asp-validation-for="QuestionText" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-floating mb-3">
+                    <select class="form-control" asp-for="QuestionLevelID">
+                        <option value="">Select Question Level</option>
+						@foreach (var questionLevel in ViewBag.QuestionLevelList)
+						{
+							<option value="@questionLevel.QuestionLevelID">@questionLevel.QuestionLevel</option>
+						}
+                    </select>
+
+                    <label for="floatingSelectLevel"><span class="text-danger">*</span> Question Level</label>
+                    <span class="text-danger" asp-validation-for="QuestionLevelID"></span>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="floatingOptionA" placeholder="Enter Option A" asp-for="OptionA" />
+                    <label for="floatingOptionA" asp-for="OptionA"><span class="text-danger">*</span> Option A</label>
+                    <span asp-validation-for="OptionA" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="floatingOptionB" placeholder="Enter Option B" asp-for="OptionB" />
+                    <label for="floatingOptionB" asp-for="OptionB"><span class="text-danger">*</span> Option B</label>
+                    <span asp-validation-for="OptionB" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="floatingOptionC" placeholder="Enter Option C" asp-for="OptionC" />
+                    <label for="floatingOptionC" asp-for="OptionC"><span class="text-danger">*</span> Option C</label>
+                    <span asp-validation-for="OptionC" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="floatingOptionD" placeholder="Enter Option D" asp-for="OptionD" />
+                    <label for="floatingOptionD" asp-for="OptionD"><span class="text-danger">*</span> Option D</label>
+                    <span asp-validation-for="OptionD" class="text-danger"></span>
+                </div>
+            </div>
+
+
+            <div class="col-md-4">
+                <div class="form-floating mb-3">
+                    <select asp-for="CorrectOption" class="form-select" id="floatingSelectCorrect" name="CorrectOption">
+                        <option value="">Select Correct Option</option>
+                        <option value="A" selected="@(Model.CorrectOption == "A" ? "selected" : null)">Option A</option>
+                        <option value="B" selected="@(Model.CorrectOption == "B" ? "selected" : null)">Option B</option>
+                        <option value="C" selected="@(Model.CorrectOption == "C" ? "selected" : null)">Option C</option>
+                        <option value="D" selected="@(Model.CorrectOption == "D" ? "selected" : null)">Option D</option>
+                    </select>
+
+                    <label for="floatingSelectCorrect" asp-for="CorrectOption"><span class="text-danger">*</span> Correct Option</label>
+                    <span asp-validation-for="CorrectOption" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="form-check mb-3">
+                    <input type="checkbox" class="form-check-input" id="isActive" name="IsActive" asp-for="IsActive" />
+                    <label class="form-check-label" for="isActive" asp-for="IsActive">Is Active</label>
+                    <span asp-validation-for="IsActive" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="form mb-3">
+                    <label for="user" asp-for="UserID"><span class="text-danger">*</span> User ID</label>
+                    <select class="form-control" id="SelectUser" asp-for="UserID">
+                        <option value="">Select User</option>
+                        @foreach (var user in ViewBag.UserList)
+                        {
+                            <option value="@user.UserID">@user.UserName</option>
+                        }
+                    </select>
+                    <span asp-validation-for="UserID" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="form-floating mb-3">
+                    <input type="number" class="form-control" id="floatingMarks" placeholder="Enter Question Marks" asp-for="QuestionMarks" />
+                    <label for="floatingMarks" asp-for="QuestionMarks"><span class="text-danger">*</span> Question Marks</label>
+                    <span asp-validation-for="QuestionMarks" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a class="btn btn-secondary" asp-controller="Question" asp-action="Question_List">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- jQuery & Validation Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>

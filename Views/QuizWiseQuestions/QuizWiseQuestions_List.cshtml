@@ -1,0 +1,114 @@
+﻿@model DataTable
+@using System.Data
+
+<div class="pagetitle">
+    <h1>Quiz Wise Questions Table</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item">Quiz Wise Question</li>
+            <li class="breadcrumb-item active">Quiz Wise Questions</li>
+        </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Search</h5>
+        <form id="quizForm">
+            <div class="row mb-3">
+                <label for="quiz" class="col-md-4 col-form-label">Select Quiz</label>
+                <div class="col-md-8">
+                    <select class="form-select" id="quiz">
+                        <option value="" selected disabled>Select Quiz</option>
+                        @foreach (DataRow row in Model.Rows)
+                        {
+                            <option value="@row["QuizName"]">@row["QuizName"]</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-success">Search</button>
+                <button type="reset" class="btn btn-danger">Reset</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Quiz Wise Questions List</h5>
+        <span class="text-danger">@TempData["ErrorMessage"]</span>
+        <div class="d-flex justify-content-end mb-3">
+            <a class="btn btn-warning me-2" asp-controller="QuizWiseQuestions" asp-action="QuizWiseQuestionsExportToExcel">Export</a>
+            <a class="btn btn-primary" asp-controller="QuizWiseQuestions" asp-action="QuizWiseQuestions_Add_Edit">
+                + Add QuizWise Question
+            </a>
+        </div>
+        <!-- Table with hoverable rows -->
+        <table class="table datatable table-hover table-striped">
+            <thead>
+                <tr>
+                    <th>Quiz Name</th>
+                    <th>Total Questions Allowed</th>
+                    <th>User Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (DataRow dataRow in Model.Rows)
+                {
+                    <tr>
+                        <td>@dataRow["QuizName"]</td>
+                        <td>@dataRow["TotalQuestions"]</td>
+                        <td>@dataRow["UserName"]</td>
+                        <td>
+                            <a asp-controller="QuizWiseQuestions" asp-action="QuizWiseQuestions_Details"
+                               class="btn btn-outline-info"
+                               asp-route-QuizWiseQuestionsID="@dataRow["QuizWiseQuestionsID"]"
+                               asp-route-QuizName="@dataRow["QuizName"]"
+                               asp-route-TotalQuestions="@dataRow["TotalQuestions"]">
+                                <i class="bi bi-info-circle"></i> Details
+                            </a>
+                            <a class="btn btn-outline-success" asp-controller="QuizWiseQuestions" asp-action="QuizWiseQuestions_Add_Edit" asp-route-QuizWiseQuestionsID="@dataRow["QuizWiseQuestionsID"]">
+                                <i class="bi bi-pencil-fill"></i> Edit
+                            </a>
+                            <a asp-controller="QuizWiseQuestions" asp-action="QuizWiseQuestionsDelete"
+                               asp-route-QuizWiseQuestionsID="@dataRow["QuizWiseQuestionsID"]"
+                               class="btn btn-outline-danger btn-xs"
+                               onclick="return confirm('Are you sure you want to delete?');">
+                                <i class="bi bi-x"></i> Delete
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <!-- End Table with hoverable rows -->
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#quizForm').on('submit', function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            var selectedQuiz = $('#quiz').val();
+
+            $('tbody tr').each(function () {
+                var row = $(this);
+                var rowQuizName = row.find('td:first').text().trim(); // Get Quiz Name from first column
+                var showRow = !selectedQuiz || rowQuizName === selectedQuiz;
+
+                row.toggle(showRow);
+            });
+        });
+
+        // Handle reset button
+        $('#quizForm').on('reset', function (event) {
+            $('tbody tr').show(); // Show all rows when reset
+        });
+    });
+</script>

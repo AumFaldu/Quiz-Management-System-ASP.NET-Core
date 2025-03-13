@@ -1,0 +1,99 @@
+﻿@model DataTable
+@using System.Data
+
+<div class="pagetitle">
+    <h1>Question Level List</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item">Tables</li>
+            <li class="breadcrumb-item active">Question Levels</li>
+        </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Question Level List</h5>
+        <span class="text-danger">@TempData["ErrorMessage"]</span>
+
+        <div class="d-flex justify-content-end mb-3">
+            <!-- Delete Form -->
+            <form id="deleteForm" method="get" asp-controller="QuestionLevel" asp-action="QuestionLevelDelete">
+                <input type="hidden" name="QuestionLevelID" id="deleteIds" />
+                <button type="button" class="btn btn-danger" id="deleteSelected">Delete Selected</button>
+            </form>
+            <a class="btn btn-warning mx-2" asp-controller="QuestionLevel" asp-action="QuestionLevelExportToExcel">Export</a>
+            <a class="btn btn-primary" asp-controller="QuestionLevel" asp-action="QuestionLevel_Add_Edit">+ Add QuestionLevel</a>
+        </div>
+
+        <!-- Table with hoverable rows -->
+        <table class="table datatable table-hover table-striped">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" class="form-check-input" id="selectAll" /></th>
+                    <th>#</th>
+                    <th>Question Level</th>
+                    <th>User ID</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (DataRow dataRow in Model.Rows)
+                {
+                    <tr>
+                        <td><input type="checkbox" class="form-check-input row-checkbox" value="@dataRow["QuestionLevelID"]" /></td>
+                        <td>@dataRow["QuestionLevelID"]</td>
+                        <td>@dataRow["QuestionLevel"]</td>
+                        <td>@dataRow["UserID"]</td>
+                        <td>
+                            <a class="btn btn-outline-success" asp-controller="QuestionLevel" asp-action="QuestionLevel_Add_Edit" asp-route-QuestionLevelID="@dataRow["QuestionLevelID"]"><i class="bi bi-pencil-fill"></i>Edit</a>
+                            <a asp-controller="QuestionLevel" asp-action="QuestionLevelDelete"
+                               asp-route-QuestionLevelID="@dataRow["QuestionLevelID"]"
+                               class="btn btn-outline-danger btn-xs"
+                               onclick="return confirm('Are you sure you want to delete?');">
+                                <i class="bi bi-x"></i>Delete
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <!-- End Table with hoverable rows -->
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Select/Deselect all checkboxes
+        $('#selectAll').on('click', function () {
+            $('.row-checkbox').prop('checked', $(this).prop('checked'));
+        });
+
+        // Uncheck "Select All" if any row is unchecked
+        $('.row-checkbox').on('click', function () {
+            if (!$('.row-checkbox:checked').length) {
+                $('#selectAll').prop('checked', false);
+            }
+        });
+
+        // Handle Delete Selected
+        $('#deleteSelected').on('click', function () {
+            var selectedIds = $('.row-checkbox:checked').map(function () {
+                return $(this).val();
+            }).get().join(',');
+
+            if (!selectedIds) {
+                alert('Please select at least one item to delete.');
+                return;
+            }
+
+            if (!confirm('Are you sure you want to delete the selected items?')) {
+                return;
+            }
+
+            window.location.href = '/QuestionLevel/QuestionLevelDelete?QuestionLevelID=' + selectedIds;
+        });
+    });
+</script>

@@ -1,0 +1,143 @@
+﻿@using System.Data 
+@* @model DataTable  *@
+@model QuizWiseQuestionsModel
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">@TempData["PageTitle"]</h5>
+
+        <!-- Form Start -->
+        <form method="post" id="quizForm" asp-controller="QuizWiseQuestions" asp-action="QuizWiseQuestionsSave">
+            <input type="hidden" asp-for="QuizWiseQuestionsID" />
+            <div class="row mb-3">
+                <div class="col">
+                    <label class="form-label" for="SelectQuiz" asp-for="QuizID">Select Quiz</label>
+                    <select class="form-control" id="SelectQuiz" asp-for="QuizID">
+                        <option value="">Select Quiz</option>
+                        @foreach (var quiz in ViewBag.QuizList)
+                        {
+                            <option value="@quiz.QuizID">@quiz.QuizName</option>
+                        }
+                    </select>
+                    <span asp-validation-for="QuizID" class="text-danger"></span>
+                </div>
+                <div class="col">
+                    <label class="form-label" for="SelectQuestion" asp-for="QuestionID">Select Question</label>
+                    <select class="form-control" id="SelectQuestion" asp-for="QuestionID">
+                        <option value="">Select Question</option>
+                        @foreach (var question in ViewBag.QuestionList)
+                        {
+                            <option value="@question.QuestionID">@question.QuestionText</option>
+                        }
+                    </select>
+                    <span asp-validation-for="QuestionID" class="text-danger"></span>
+                </div>
+                <div class="col">
+                    <label class="form-label" for="SelectUser" asp-for="UserID">Select User</label>
+                    <select class="form-control" id="SelectUser" asp-for="UserID">
+                        <option value="">Select User</option>
+                        @foreach (var user in ViewBag.UserList)
+                        {
+                            <option value="@user.UserID">@user.UserName</option>
+                        }
+                    </select>
+                    <span asp-validation-for="UserID" class="text-danger"></span>
+                </div>
+            </div>
+
+            @* <table class="table datatable table-hover table-striped"> *@
+            @*     <thead> *@
+            @*         <tr> *@
+            @*             <th><input type="checkbox" class="form-check-input" id="select-all"></th> *@
+            @*             <th>Question</th> *@
+            @*             <th>Option A</th> *@
+            @*             <th>Option B</th> *@
+            @*             <th>Option C</th> *@
+            @*             <th>Option D</th> *@
+            @*             <th>Answer</th> *@
+            @*             <th>Marks</th> *@
+            @*         </tr> *@
+            @*     </thead> *@
+            @*     <tbody> *@
+            @*         @foreach (DataRow dataRow in Model.Rows) *@
+            @*         { *@
+            @*             <tr> *@
+            @*                 <td><input type="checkbox" class="form-check-input question-checkbox"></td> *@
+            @*                 <td>@dataRow["QuestionText"]</td> *@
+            @*                 <td>@dataRow["OptionA"]</td> *@
+            @*                 <td>@dataRow["OptionB"]</td> *@
+            @*                 <td>@dataRow["OptionC"]</td> *@
+            @*                 <td>@dataRow["OptionD"]</td> *@
+            @*                 <td>@dataRow["CorrectOption"]</td> *@
+            @*                 <td>@dataRow["QuestionMarks"]</td> *@
+            @*             </tr> *@
+            @*         } *@
+            @*     </tbody> *@
+            @* </table> *@
+
+            <button type="submit" class="btn btn-success">Save</button>
+            <a class="btn btn-danger" asp-controller="QuizWiseQuestions" asp-action="QuizWiseQuestions_List">Cancel</a>
+        </form>
+        <!-- Form End -->
+    </div>
+</div>
+
+<!-- Include jQuery, Validation and Unobtrusive Validation Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        console.log("jQuery is working!"); // Test if jQuery is working
+
+        function updateSelectedQuestionsCount() {
+            var selectedCount = $(".question-checkbox:checked").length;
+            console.log("Selected count: " + selectedCount); // Log selected count
+            $("#SelectedQuestions").val(selectedCount);
+            validateQuestionCount(selectedCount);
+        }
+
+        function validateQuestionCount(selectedCount) {
+            var totalQuestionsAllowed = parseInt($("#TotalQuestions").val());
+            console.log("Total questions allowed: " + totalQuestionsAllowed); // Log total questions allowed
+            if (selectedCount > totalQuestionsAllowed) {
+                alert("You have exceeded the total questions allowed!");
+                $(".question-checkbox:checked").last().prop('checked', false);
+                selectedCount = $(".question-checkbox:checked").length;
+                console.log("Corrected selected count: " + selectedCount); // Log corrected selected count
+                $("#SelectedQuestions").val(selectedCount);
+            }
+        }
+
+        $(".question-checkbox").change(function() {
+            updateSelectedQuestionsCount();
+        });
+
+        $("#select-all").on("change", function() {
+            var isChecked = $(this).is(':checked');
+            console.log("Select All checkbox is checked: " + isChecked); // Log Select All checkbox status
+            $(".question-checkbox").prop('checked', isChecked);
+            updateSelectedQuestionsCount();
+        });
+
+        $("#TotalQuestions").change(function() {
+            var selectedCount = $(".question-checkbox:checked").length;
+            validateQuestionCount(selectedCount);
+        });
+
+        // Initialize selected questions count
+        updateSelectedQuestionsCount();
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $("#quizForm").submit(function (e) {
+            if ($("#SelectQuiz").val() === "") {
+                alert("Please select a quiz before submitting.");
+                e.preventDefault(); // Prevent form submission
+            }
+        });
+    });
+</script>

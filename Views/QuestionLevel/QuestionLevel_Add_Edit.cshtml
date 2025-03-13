@@ -1,0 +1,44 @@
+﻿@model QuestionLevelModel
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">@TempData["PageTitle"]</h5>
+
+        <!-- Floating Labels Form -->
+        <form class="row g-3" method="post" asp-action="QuestionLevelSave"  asp-controller="QuestionLevel">
+            <input type="hidden" asp-for="@Model.QuestionLevelID"/>
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="floatingQuestionLevel" placeholder="Enter a question level (e.g., Easy, Medium, Hard)" asp-for="QuestionLevel" />
+                        <label for="floatingQuestionLevel" asp-for="QuestionLevel"><span class="text-danger">*</span>Question Level</label>
+                    </div>
+                    <span asp-validation-for="QuestionLevel" class="text-danger"></span>
+                </div>
+                <div class="col-12">
+                    <div class="form mb-3">
+                        @* <input type="text" class="form-control" id="floatingUserID" placeholder="Enter a User ID" asp-for="UserID" /> *@
+                        <label for="SelectUser" asp-for="UserID"><span class="text-danger">*</span>User ID</label>
+                        <select class="form-control" id="SelectUser" asp-for="UserID">
+                            <option value="">Select User</option>
+                            @foreach (var user in ViewBag.UserList)
+                            {
+                                <option value="@user.UserID">@user.UserName</option>
+                            }
+                        </select>
+                    </div>
+                    <span asp-validation-for="UserID" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <a class="btn btn-secondary" asp-controller="QuestionLevel" asp-action="QuestionLevel_List">Cancel</a>
+            </div>
+        </form><!-- End Floating Labels Form -->
+
+    </div>
+</div>
+
+<!-- Include jQuery, Validation, and Unobtrusive Validation Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>

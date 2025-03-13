@@ -1,0 +1,133 @@
+﻿@model DataTable
+@using System.Data
+
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<div class="pagetitle">
+    <h1>Quiz List</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item">Quiz</li>
+            <li class="breadcrumb-item active">Quiz List</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Search</h5>
+        <form>
+            <div class="row mb-3">
+                <label class="col-md-4 col-form-label">Quiz Name</label>
+                <div class="col">
+                    <input id="quiz-name" type="text" class="form-control" placeholder="Enter Quiz Name">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-md-4 col-form-label">Min Questions</label>
+                <div class="col">
+                    <input id="min-questions" type="number" class="form-control" placeholder="Enter Min Questions">
+                </div>
+                <label class="col-md-4 col-form-label">Max Questions</label>
+                <div class="col">
+                    <input id="max-questions" type="number" class="form-control" placeholder="Enter Max Questions">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-md-4 col-form-label">From Quiz Date</label>
+                <div class="col">
+                    <input id="from-date" type="date" class="form-control">
+                </div>
+                <label class="col-md-2 col-form-label">To Quiz Date</label>
+                <div class="col">
+                    <input id="to-date" type="date" class="form-control">
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-success">Search</button>
+                <button type="reset" class="btn btn-danger">Reset</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Quiz List</h5>
+        <span class="text-danger">@TempData["ErrorMessage"]</span>
+        <div class="d-flex justify-content-end mb-3">
+            <a class="btn btn-warning me-2" asp-controller="Quiz" asp-action="QuizExportToExcel">Export</a>
+            <a class="btn btn-primary" asp-controller="Quiz" asp-action="Quiz_Add_Edit">+ Add Quiz</a>
+        </div>
+        <table class="table datatable table-hover table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Quiz Name</th>
+                    <th>Total Questions</th>
+                    <th>Quiz Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (DataRow dataRow in Model.Rows)
+                {
+                    <tr data-name="@dataRow["QuizName"].ToString().ToLower()"
+                        data-total="@dataRow["TotalQuestions"]"
+                        data-date="@Convert.ToDateTime(dataRow["QuizDate"]).ToString("yyyy-MM-dd")">
+                        <td>@dataRow["QuizID"]</td>
+                        <td>@dataRow["QuizName"]</td>
+                        <td>@dataRow["TotalQuestions"]</td>
+                        <td>@Convert.ToDateTime(dataRow["QuizDate"]).ToString("yyyy-MM-dd")</td>
+                        <td>
+                            <a class="btn btn-outline-success" asp-controller="Quiz" asp-action="Quiz_Add_Edit" asp-route-QuizID="@dataRow["QuizID"]"><i class="bi bi-pencil-fill"></i> Edit</a>
+                            <a asp-controller="Quiz" asp-action="QuizDelete" asp-route-QuizID="@dataRow["QuizID"]" class="btn btn-outline-danger btn-xs" onclick="return confirm('Are you sure you want to delete?');">
+                                <i class="bi bi-x"></i> Delete
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('form').on('submit', function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            let quizName = $('#quiz-name').val().toLowerCase();
+            let minQuestions = parseInt($('#min-questions').val()) || 0;
+            let maxQuestions = parseInt($('#max-questions').val()) || Infinity;
+            let fromDate = $('#from-date').val();
+            let toDate = $('#to-date').val();
+
+            $('tbody tr').each(function () {
+                let row = $(this);
+                let rowQuizName = row.data('name') || "";
+                let rowTotalQuestions = parseInt(row.data('total')) || 0;
+                let rowQuizDate = row.data('date') || "";
+
+                let quizDateObj = rowQuizDate ? new Date(rowQuizDate) : null;
+                let fromDateObj = fromDate ? new Date(fromDate) : null;
+                let toDateObj = toDate ? new Date(toDate) : null;
+
+                let matchName = quizName === "" || rowQuizName.includes(quizName);
+                let matchQuestions = rowTotalQuestions >= minQuestions && rowTotalQuestions <= maxQuestions;
+                let matchDate = (!fromDateObj || quizDateObj >= fromDateObj) &&
+                                (!toDateObj || quizDateObj <= toDateObj);
+
+                row.toggle(matchName && matchQuestions && matchDate);
+            });
+        });
+
+        // Reset button handler
+        $('form').on('reset', function () {
+            $('tbody tr').show(); // Show all rows when reset
+        });
+    });
+</script>

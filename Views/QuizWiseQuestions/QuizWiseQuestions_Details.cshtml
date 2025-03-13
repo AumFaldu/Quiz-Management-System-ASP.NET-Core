@@ -1,0 +1,124 @@
+﻿@model DataTable
+@using System.Data
+
+<div class="pagetitle">
+    <h1>Quiz Wise Question Details</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item">Quiz Wise Question</li>
+            <li class="breadcrumb-item active">Quiz Wise Question Details</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Quiz Wise Question Details</h5>
+        <span class="text-danger">@TempData["ErrorMessage"]</span>
+
+        <div class="d-flex justify-content-end mb-3">
+            <button class="btn btn-danger me-2" id="delete-selected">Delete Selected</button>
+            <a class="btn btn-primary" asp-controller="QuizWiseQuestions" asp-action="QuizWiseQuestions_Add_Edit">+ Add Questions</a>
+        </div>
+
+        <div>
+            <p>Quiz Name: @ViewBag.QuizName</p>
+            <p>Total Questions in Quiz: @Model.Rows.Count</p>
+        </div>
+
+        <!-- Table -->
+        <table class="table datatable table-hover table-striped">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" class="form-check-input" id="select-all" /></th>
+                    <th>Question</th>
+                    <th>Option A</th>
+                    <th>Option B</th>
+                    <th>Option C</th>
+                    <th>Option D</th>
+                    <th>Correct Option</th>
+                    <th>Marks</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (DataRow dataRow in Model.Rows)
+                {
+                    <tr>
+                        <td><input type="checkbox" class="form-check-input question-checkbox" data-id="@dataRow["QuizWiseQuestionsID"]" /></td>
+                        <td>@dataRow["QuestionText"]</td>
+                        <td>@dataRow["OptionA"]</td>
+                        <td>@dataRow["OptionB"]</td>
+                        <td>@dataRow["OptionC"]</td>
+                        <td>@dataRow["OptionD"]</td>
+                        <td>@dataRow["CorrectOption"]</td>
+                        <td>@dataRow["QuestionMarks"]</td>
+                        <td>
+                            <button class="btn btn-outline-danger delete-single" data-id="@dataRow["QuizWiseQuestionsID"]">
+                                <i class="bi bi-x"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- jQuery and AJAX Script -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Select all functionality
+        $("#select-all").on("change", function () {
+            $(".question-checkbox").prop('checked', $(this).prop("checked"));
+        });
+
+        // Delete multiple questions
+        $("#delete-selected").on("click", function () {
+            var selectedIds = [];
+            $(".question-checkbox:checked").each(function () {
+                selectedIds.push($(this).data("id"));
+            });
+
+            if (selectedIds.length === 0) {
+                alert("No questions selected for deletion.");
+                return;
+            }
+
+            if (!confirm("Are you sure you want to delete the selected questions?")) return;
+
+            $.ajax({
+                url: "/QuizWiseQuestions/DeleteMultiple",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ questionIds: selectedIds }),
+                success: function () {
+                    location.reload();
+                },
+                error: function () {
+                    alert("Failed to delete questions.");
+                }
+            });
+        });
+
+        // Delete single question
+        $(".delete-single").on("click", function () {
+            var questionId = $(this).data("id");
+            if (!confirm("Are you sure you want to delete this question?")) return;
+
+            $.ajax({
+                url: "/QuizWiseQuestions/QuizWiseQuestionsDelete",
+                type: "POST",
+                data: { QuizWiseQuestionsID: questionId },
+                success: function () {
+                    location.reload();
+                },
+                error: function () {
+                    alert("Failed to delete question.");
+                }
+            });
+        });
+    });
+</script>

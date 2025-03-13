@@ -1,0 +1,61 @@
+﻿@model QuizModel
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">@TempData["PageTitle"]</h5>
+
+        <!-- Floating Labels Form -->
+        <form class="row g-3" method="post" asp-action="QuizSave" asp-controller="Quiz">
+            <input type="hidden" asp-for="@Model.QuizID"/>
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="floatingName" placeholder="Enter Quiz Name" asp-for="QuizName" />
+                        <label for="floatingName" asp-for="QuizName"><span class="text-danger">*</span>Quiz Name</label>
+                    </div>
+                    <span asp-validation-for="QuizName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="form-floating mb-3">
+                    <input type="number" class="form-control" id="floatingTotal" placeholder="Enter Total number of Questions" asp-for="TotalQuestions" />
+                    <label for="floatingTotal" asp-for="TotalQuestions"><span class="text-danger">*</span>Total Questions</label>
+                </div>
+                <span asp-validation-for="TotalQuestions" class="text-danger"></span>
+            </div>
+            <div class="col-12">
+                <div class="form-floating mb-3">
+                    <input type="datetime-local" class="form-control" id="floatingDate" placeholder="Enter Date" asp-for="QuizDate" />
+                    <label for="floatingDate"><span class="text-danger">*</span>Quiz Date</label>
+                </div>
+                <span asp-validation-for="QuizDate" class="text-danger"></span>
+            </div>
+            <div class="col-12">
+                <div class="form mb-3">
+                    <label for="floatingUserID" class="form-label"><span class="text-danger">*</span>Select User</label>
+                    <select class="form-control" asp-for="UserID" id="floatingUserID">
+                        <option value="">Select User</option>
+                    @foreach(var user in ViewBag.UserList)
+                    {
+                        <option value="@user.UserID">@user.UserName</option>
+                    }
+                    </select>
+                </div>
+                <span asp-validation-for="UserID" class="text-danger"></span>
+            </div>
+            <div class="col-12 form-check">
+                <input type="checkbox" class="form-check-input" asp-for="IsActive" />
+                <label class="form-check-label" asp-for="IsActive">IsActive</label>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a class="btn btn-secondary" asp-controller="Quiz" asp-action="Quiz_List">Cancel</a>
+            </div>
+        </form><!-- End Floating Labels Form -->
+
+    </div>
+</div>
+
+<!-- Include jQuery, Validation, and Unobtrusive Validation Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>

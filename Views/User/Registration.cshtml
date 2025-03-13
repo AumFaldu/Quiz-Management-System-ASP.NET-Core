@@ -1,0 +1,70 @@
+﻿@model UserModel
+
+@{
+    Layout = "~/Views/Shared/_BlankLayout.cshtml";
+    ViewData["Title"] = "Registration";
+}
+
+<section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+                <div class="d-flex justify-content-center py-4">
+                    <a class="logo d-flex align-items-center w-auto">
+                        <img src="~/assets/img/logo.png" alt="">
+                        <span class="d-none d-lg-block">User Registration</span>
+                    </a>
+                </div>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="pt-4 pb-2">
+                            <h5 class="card-title text-center pb-0 fs-4">Register a New Account</h5>
+                            <p class="text-center small">Enter your details to register</p>
+                        </div>
+                        <form asp-controller="User" asp-action="UserSave" method="post">
+                            <div class="row g-3">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <input type="hidden" asp-for="@Model.UserID">
+                                <div class="col-12">
+                                    <label asp-for="UserName" class="form-label">Username</label>
+                                    <input asp-for="UserName" class="form-control">
+                                    <span asp-validation-for="UserName" class="text-danger"></span>
+                                </div>
+                                <div class="col-12">
+                                    <label asp-for="Email" class="form-label">Email</label>
+                                    <input asp-for="Email" class="form-control">
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                                <div class="col-12">
+                                    <label asp-for="Password" class="form-label">Password</label>
+                                    <input asp-for="Password" class="form-control">
+                                    <span asp-validation-for="Password" class="text-danger"></span>
+                                </div>
+                                <div class="col-12">
+                                    <label asp-for="Mobile" class="form-label">Mobile Number</label>
+                                    <input asp-for="Mobile" class="form-control">
+                                    <span asp-validation-for="Mobile" class="text-danger"></span>
+                                </div>
+                                <div class="col-12">
+                                    <input type="submit" class="btn btn-primary w-100" value="@(ViewBag.UserID > 0 ? "Update Account" : "Create Account")">
+                                </div>
+                                <div class="col-12">
+                                    <p class="small mb-0">Already have an account? <a asp-controller="User" asp-action="Login">Login</a></p>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="credits">
+                    Designed by <a href="https://bootstrapmade.com/">Aum Faldu</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

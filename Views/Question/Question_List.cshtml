@@ -1,0 +1,156 @@
+﻿@model DataTable
+@using System.Data
+
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<div class="pagetitle">
+    <h1>Question List</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item">Question</li>
+            <li class="breadcrumb-item active">Question List</li>
+        </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Search</h5>
+        <form>
+            <div class="row mb-3">
+                <label for="quiz" class="col-md-4 col-form-label">Select Question Level</label>
+                <div class="col">
+                    <select class="form-select" id="quiz">
+                        <option value="" selected disabled>Select Level</option>
+                        <option>Easy</option>
+                        <option>Medium</option>
+                        <option>Hard</option>
+                    </select>
+                </div>
+                <label for="question" class="col-md-4 col-form-label">Question</label>
+                <div class="col">
+                    <input id="question" class="form-control" type="text" placeholder="Enter Question">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label for="min-marks" class="col-md-4 col-form-label">Min Marks</label>
+                <div class="col">
+                    <input id="min-marks" class="form-control" type="number" placeholder="Enter Min Marks">
+                </div>
+                <label for="max-marks" class="col-md-4 col-form-label">Max Marks</label>
+                <div class="col">
+                    <input id="max-marks" class="form-control" type="number" placeholder="Enter Max Marks">
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-success">Search</button>
+                <button type="reset" class="btn btn-danger">Reset</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Question List</h5>
+        <span class="text-danger">@TempData["ErrorMessage"]</span>
+        <div class="d-flex justify-content-end mb-3">
+            <a class="btn btn-warning me-2" asp-controller="Question" asp-action="QuestionExportToExcel">Export</a>
+            <a class="btn btn-primary" asp-controller="Question" asp-action="Question_Add_Edit">+ Add Question</a>
+        </div>
+        <table class="table datatable table-hover table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Question Text</th>
+                    <th>Question Level</th>
+                    <th>Option A</th>
+                    <th>Option B</th>
+                    <th>Option C</th>
+                    <th>Option D</th>
+                    <th>Answer</th>
+                    <th>Marks</th>
+                    <th>Active</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (DataRow dataRow in Model.Rows)
+                {
+                    <tr data-question-text="@dataRow["QuestionText"]"
+                        data-question-level="@dataRow["QuestionLevelID"]"
+                        data-marks="@dataRow["QuestionMarks"]">
+                        <td>@dataRow["QuestionID"]</td>
+                        <td>@dataRow["QuestionText"]</td>
+                        <td>@dataRow["QuestionLevelID"]</td>
+                        <td>@dataRow["OptionA"]</td>
+                        <td>@dataRow["OptionB"]</td>
+                        <td>@dataRow["OptionC"]</td>
+                        <td>@dataRow["OptionD"]</td>
+                        <td>@dataRow["CorrectOption"]</td>
+                        <td>@dataRow["QuestionMarks"]</td>
+                        <td>@dataRow["IsActive"]</td>
+                        <td>
+                            <a class="btn btn-outline-success" asp-controller="Question" asp-action="Question_Add_Edit" asp-route-QuestionID="@dataRow["QuestionID"]"><i class="bi bi-pencil-fill"></i></a>
+                            <a asp-controller="Question" asp-action="QuestionDelete" asp-route-QuestionID="@dataRow["QuestionID"]" class="btn btn-outline-danger btn-xs" onclick="return confirm('Are you sure you want to delete?');">
+                                <i class="bi bi-x"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        var levelMapping = {
+            "12": "Easy",
+            "13": "Medium",
+            "14": "Hard"
+        };
+
+        $('form').on('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            var questionLevel = $('#quiz').val();
+            var questionText = $('#question').val().toLowerCase();
+            var minMarks = parseFloat($('#min-marks').val());
+            var maxMarks = parseFloat($('#max-marks').val());
+
+            $('tbody tr').each(function() {
+                var row = $(this);
+                var rowQuestionLevelID = row.data('question-level').toString().trim();
+                var rowQuestionLevel = levelMapping[rowQuestionLevelID] || rowQuestionLevelID;
+                var rowQuestionText = row.data('question-text').toString().trim().toLowerCase();
+                var rowMarks = parseFloat(row.data('marks'));
+                var showRow = true;
+
+                if (questionLevel && rowQuestionLevel !== questionLevel) {
+                    showRow = false;
+                }
+                if (questionText && !rowQuestionText.includes(questionText)) {
+                    showRow = false;
+                }
+                if (!isNaN(minMarks) && rowMarks < minMarks) {
+                    showRow = false;
+                }
+                if (!isNaN(maxMarks) && rowMarks > maxMarks) {
+                    showRow = false;
+                }
+
+                row.toggle(showRow);
+            });
+        });
+
+        // Handle the reset button
+        $('form').on('reset', function(event) {
+            $('tbody tr').show(); // Show all rows
+        });
+    });
+</script>
+
